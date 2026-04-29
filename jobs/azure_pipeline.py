@@ -7,7 +7,10 @@ name = "Import VNET to Azure"
 
 class AzurePipeline(JobButtonReceiver):
     
-    def run(self):
+    class Meta:
+        name = "Import VNET to Azure"
+        
+    def run(self,obj):
         url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
         payload = {
             "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
