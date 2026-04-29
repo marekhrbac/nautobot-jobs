@@ -14,7 +14,7 @@ class AzurePipeline(Job):
         }
         response = requests.post(url, data=payload)
         
-        is_vnet_prefixes = Prefix.objects.filter(cf_is_vnet=True)
+        is_vnet_prefixes = Prefix.objects.filter( _custom_field_data__is_vnet=True)
         for prefix in is_vnet_prefixes:
             vnet = prefix.custom_fields.get("vnet")
             if not vnet:
