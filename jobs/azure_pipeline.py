@@ -1,9 +1,11 @@
 from nautobot.apps.jobs import Job, register_jobs
+from nautobot.apps.jobs import JobButtonReceiver
 import requests
 import os
 
+name = "Import VNET to Azure"
 
-class AzurePipeline(Job):
+class AzurePipeline(JobButtonReceiver):
     
     def run(self):
         url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
