@@ -1,4 +1,5 @@
 from nautobot.apps.jobs import Job, register_jobs
+from nautobot.ipam.models import Prefix
 import requests
 import os
 
@@ -11,9 +12,15 @@ class AzurePipeline(Job):
             "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
             "ref": "main"
         }
-        self.logger.debug("Running Azure Pipeline Job.")
         response = requests.post(url, data=payload)
         
+        is_vnet_prefixes = Prefix.objects.filter(cf_is_vnet=True)
+        for prefix in is_vnet_prefixes:
+            vnet = prefix.custom_fields.get("vnet")
+            if not vnet:
+                self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
+                return
+            
         if response.ok:
             self.logger.info("Pipeline triggered successfully")
         else:
