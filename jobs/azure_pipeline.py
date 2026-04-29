@@ -16,11 +16,15 @@ class AzurePipeline(Job):
         
         is_vnet_prefixes = Prefix.objects.filter( _custom_field_data__is_vnet=True)
         for prefix in is_vnet_prefixes:
-            vnet = prefix.custom_field_data.get("vnet")
-            if not vnet:
+            vnet_name = prefix.custom_field_data.get("vnet")
+            if not vnet_name:
                 self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
-                return
-            
+                exit()
+            rg = prefix.custom_field_data.get("resource_group")
+            if not rg:
+                self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'RESOURCE GROUP' custom field value.")
+                exit()
+
         if response.ok:
             self.logger.info("Pipeline triggered successfully")
         else:
