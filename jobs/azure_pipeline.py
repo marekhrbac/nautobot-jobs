@@ -4,14 +4,13 @@ import os
 
 
 class AzurePipeline(Job):
-
-    url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
-    payload = {
-        "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
-        "ref": "main"
-    }
     
     def run(self):
+        url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
+        payload = {
+            "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
+            "ref": "main"
+        }
         self.logger.debug("Running Azure Pipeline Job.")
         response = requests.post(self.url, data=payload)
         
