@@ -14,7 +14,9 @@ class AzurePipeline(Job):
         self.logger.debug("Running Azure Pipeline Job.")
         response = requests.post(url, data=payload)
         
-        self.logger.debug(response.text)
-
+        if response.ok:
+            self.logger.info("Pipeline triggered successfully")
+        else:
+            self.logger.error(f"Failed: {response.status_code} {response.text}")
 
 register_jobs(AzurePipeline)
