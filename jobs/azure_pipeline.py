@@ -12,7 +12,7 @@ class AzurePipeline(Job):
             "ref": "main"
         }
         self.logger.debug("Running Azure Pipeline Job.")
-        response = requests.post(self.url, data=payload)
+        response = requests.post(url, data=payload)
         
         self.logger.debug(response.text)
 
