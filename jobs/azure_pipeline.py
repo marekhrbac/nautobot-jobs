@@ -7,6 +7,23 @@ import os
 class AzurePipeline(Job):
     
     def run(self):
+        is_vnet_prefixes = Prefix.objects.filter( _custom_field_data__is_vnet=True)
+        for prefix in is_vnet_prefixes:
+            vnet_name = prefix.custom_field_data.get("vnet")
+            if not vnet_name:
+                self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
+                return
+            rg = prefix.custom_field_data.get("resource_group")
+            if not rg:
+                self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'RESOURCE GROUP' custom field value.")
+                return
+
+        if response.ok:
+            self.logger.info("Pipeline triggered successfully")
+        else:
+            self.logger.error(f"Failed: {response.status_code} {response.text}")
+            
+        
         url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
         payload = {
             "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
@@ -14,20 +31,5 @@ class AzurePipeline(Job):
         }
         response = requests.post(url, data=payload)
         
-        is_vnet_prefixes = Prefix.objects.filter( _custom_field_data__is_vnet=True)
-        for prefix in is_vnet_prefixes:
-            vnet_name = prefix.custom_field_data.get("vnet")
-            if not vnet_name:
-                self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
-                exit()
-            rg = prefix.custom_field_data.get("resource_group")
-            if not rg:
-                self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'RESOURCE GROUP' custom field value.")
-                exit()
-
-        if response.ok:
-            self.logger.info("Pipeline triggered successfully")
-        else:
-            self.logger.error(f"Failed: {response.status_code} {response.text}")
 
 register_jobs(AzurePipeline)
