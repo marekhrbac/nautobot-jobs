@@ -16,7 +16,7 @@ class AzurePipeline(Job):
         
         is_vnet_prefixes = Prefix.objects.filter( _custom_field_data__is_vnet=True)
         for prefix in is_vnet_prefixes:
-            vnet = prefix.custom_fields.get("vnet")
+            vnet = prefix.custom_field_data.get("vnet")
             if not vnet:
                 self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
                 return
