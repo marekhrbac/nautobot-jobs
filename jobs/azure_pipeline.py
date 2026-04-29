@@ -17,12 +17,6 @@ class AzurePipeline(Job):
             if not rg:
                 self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'RESOURCE GROUP' custom field value.")
                 return
-
-        if response.ok:
-            self.logger.info("Pipeline triggered successfully")
-        else:
-            self.logger.error(f"Failed: {response.status_code} {response.text}")
-            
         
         url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
         payload = {
@@ -31,5 +25,11 @@ class AzurePipeline(Job):
         }
         response = requests.post(url, data=payload)
         
-
+        if response.ok:
+            self.logger.info("Pipeline triggered successfully")
+        else:
+            self.logger.error(f"Failed: {response.status_code} {response.text}")
+            
+            
+            
 register_jobs(AzurePipeline)
