@@ -7,7 +7,7 @@ class AzurePipeline(Job):
 
     url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
     payload = {
-        "token": getenv("GITLAB_TRIGGER_TOKEN"),
+        "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
         "ref": "main"
     }
     
