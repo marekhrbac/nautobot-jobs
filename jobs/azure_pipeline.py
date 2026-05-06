@@ -30,6 +30,32 @@ class AzurePipeline(Job):
         else:
             self.logger.error(f"Failed: {response.status_code} {response.text}")
             
-            
+        pipeline_id = response.json()["id"]
+
+        url = f"https://gitlab.msync.cz/api/v4/projects/3/pipelines/{pipeline_id}/jobs"  
+        header = {
+            "Authorization": f"Bearer {os.getenv('GITLAB_BEARER_TOKEN')}"
+        }
+        response = requests.get(url, headers=header)     
+        pipeline_status = response.json()[0]["status"]
+
+        while pipeline_status not in ["success"]:
+            self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}. Waiting for completion...")
+            time.sleep(10) 
+            response = requests.get(url, headers=header)     
+            pipeline_status = response.json()[0]["status"]
+            pipeline_job_id = response.json()[0]["id"]
+        self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}")
+
+
+        url = f"https://gitlab.msync.cz/api/v4/projects/3/jobs/{pipeline_job_id}/artifacts/tfplan.txt"  
+        header = {
+            "Authorization": f"Bearer {os.getenv('GITLAB_BEARER_TOKEN')}"
+        }
+        response = requests.get(url, headers=header)  
+        self.logger.info(f"Pipeline #{pipeline_id} job output:")
+        self.logger.info(response.text) 
+
+   
             
 register_jobs(AzurePipeline)
