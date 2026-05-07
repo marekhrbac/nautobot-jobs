@@ -56,7 +56,7 @@ class AzurePipeline(Job):
         }
         response = requests.get(url, headers=header)  
         self.logger.info(f"Pipeline #{pipeline_id} job output:")
-        self.logger.info('<span style="font-family: monospace;">{response.text}</span>')
+        self.logger.info(f'<span style="font-family: monospace;">{response.text}</span>')
 
    
             
