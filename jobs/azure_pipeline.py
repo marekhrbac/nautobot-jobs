@@ -55,7 +55,7 @@ class AzurePipeline(Job):
         }
         response = requests.get(url, headers=header)  
         self.logger.info(f"Pipeline #{pipeline_id} job output:")
-        self.logger.info(response.text) 
+        self.logger.info(f"<pre>{response.text}</pre>") 
 
    
             
