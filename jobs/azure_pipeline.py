@@ -11,7 +11,9 @@ class AzurePipeline(Job):
     def run(self):
         is_vnet_prefixes = Prefix.objects.filter( _custom_field_data__is_vnet=True)
         for prefix in is_vnet_prefixes:
-            self.logger.info(prefix)
+            azure_split_location = prefix.location.display.split(" → ")
+            if azure_split_location[0] != "Azure" or len(azure_split_location) != 3:
+                self.logger.info(f"Prefix {prefix} is marked as VNet but has bad location assigned")
             vnet_name = prefix.custom_field_data.get("vnet")
             if not vnet_name:
                 self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
@@ -20,19 +22,19 @@ class AzurePipeline(Job):
             if not rg:
                 self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'RESOURCE GROUP' custom field value.")
                 return
-        
+
         url = "https://gitlab.msync.cz/api/v4/projects/3/trigger/pipeline"  
         payload = {
             "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
             "ref": "main"
         }
         response = requests.post(url, data=payload)
-        
+
         if response.ok:
             self.logger.info("Pipeline triggered successfully")
         else:
             self.logger.error(f"Failed: {response.status_code} {response.text}")
-            
+
         pipeline_id = response.json()["id"]
 
         url = f"https://gitlab.msync.cz/api/v4/projects/3/pipelines/{pipeline_id}/jobs"  
@@ -60,5 +62,5 @@ class AzurePipeline(Job):
         self.logger.info(f"```terraform\n{(response.text)}\n```")
 
    
-            
+
 register_jobs(AzurePipeline)
