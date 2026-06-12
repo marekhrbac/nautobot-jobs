@@ -14,6 +14,7 @@ class AzurePipeline(Job):
             azure_split_location = prefix.location.display.split(" → ")
             if azure_split_location[0] != "Azure" or len(azure_split_location) != 3:
                 self.logger.info(f"Prefix {prefix} is marked as VNet but has bad location assigned")
+                return
             vnet_name = prefix.custom_field_data.get("vnet")
             if not vnet_name:
                 self.logger.warning(f"Prefix {prefix} is marked as VNet but has no 'VNET NAME' custom field value.")
