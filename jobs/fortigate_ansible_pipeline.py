@@ -5,7 +5,7 @@ import time
 from django.utils.html import escape
 
 
-class AzurePipeline(Job):
+class FortigateAnsiblePipeline(Job):
     
     def run(self):
         url = "https://gitlab.msync.cz/api/v4/projects/4/trigger/pipeline"  
@@ -48,4 +48,4 @@ class AzurePipeline(Job):
 
    
 
-register_jobs(AzurePipeline)
+register_jobs(FortigateAnsiblePipeline)
