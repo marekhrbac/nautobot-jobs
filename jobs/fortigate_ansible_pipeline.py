@@ -1,12 +1,11 @@
 from nautobot.apps.jobs import Job, register_jobs
-from nautobot.ipam.models import Prefix
 import requests
 import os
 import time
 from django.utils.html import escape
 
 
-class FortigateAnsiblePipeline(Job):
+class AzurePipeline(Job):
     
     def run(self):
         url = "https://gitlab.msync.cz/api/v4/projects/4/trigger/pipeline"  
@@ -45,8 +44,8 @@ class FortigateAnsiblePipeline(Job):
         }
         response = requests.get(url, headers=header)  
         self.logger.info(f"Pipeline #{pipeline_id} job output:")
-        self.logger.info(f"```ansible\n{(response.text)}\n```")
+        self.logger.info(f"```Ansible\n{(response.text)}\n```")
 
    
 
-register_jobs(FortigateAnsiblePipeline)
+register_jobs(AzurePipeline)
