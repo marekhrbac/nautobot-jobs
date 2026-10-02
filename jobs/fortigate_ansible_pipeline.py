@@ -10,7 +10,7 @@ class FortigateAnsiblePipeline(Job):
     def run(self):
         url = "https://gitlab.msync.cz/api/v4/projects/4/trigger/pipeline"  
         payload = {
-            "token": os.getenv("GITLAB_TRIGGER_TOKEN"),
+            "token": os.getenv("GITLAB_TRIGGER_TOKEN_ANSIBLE"),
             "ref": "main"
         }
         response = requests.post(url, data=payload)
