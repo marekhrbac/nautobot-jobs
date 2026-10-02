@@ -37,12 +37,14 @@ class FortigateAnsiblePipeline(Job):
             pipeline_job_id = response.json()[0]["id"]
         self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}")
 
-        pipeline_job_id = response.json()[0]["id"]
-        trace = requests.get(
-            f"https://gitlab.msync.cz/api/v4/projects/4/jobs/{pipeline_job_id}/trace",
-            headers=header,
-        )
-        self.logger.info(f"```\n{trace.text[-5000:]}\n```")
+        for job in reversed(response.json()):
+            if job["status"] == "skipped":
+                continue
+            trace = requests.get(
+                f"https://gitlab.msync.cz/api/v4/projects/4/jobs/{job['id']}/trace",
+                headers=header,
+            )
+            self.logger.info(f"Job {job['name']}: {job['status']}\n```\n{trace.text[-5000:]}\n```")
 
         if pipeline_status != "success":
             raise RuntimeError(f"Pipeline #{pipeline_id} status: {pipeline_status}")
