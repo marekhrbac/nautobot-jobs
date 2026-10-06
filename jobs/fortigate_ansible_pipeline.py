@@ -22,21 +22,23 @@ class FortigateAnsiblePipeline(Job):
 
         pipeline_id = response.json()["id"]
 
-        url = f"https://gitlab.msync.cz/api/v4/projects/4/pipelines/{pipeline_id}/jobs"  
+        url = f"https://gitlab.msync.cz/api/v4/projects/4/pipelines/{pipeline_id}"  
         header = {
             "Authorization": f"Bearer {os.getenv('GITLAB_BEARER_TOKEN')}"
         }
         response = requests.get(url, headers=header)     
-        pipeline_status = response.json()[0]["status"]
+        pipeline_status = response.json()["status"]
 
-        while pipeline_status not in ["success", "failed", "canceled", "skipped"]:
+        while pipeline_status not in ["success", "failed", "canceled", "skipped", "manual"]:
             self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}. Waiting for completion...")
             time.sleep(10) 
             response = requests.get(url, headers=header)     
             pipeline_status = response.json()[0]["status"]
-            pipeline_job_id = response.json()[0]["id"]
         self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}")
 
+        url = f"https://gitlab.msync.cz/api/v4/projects/4/pipelines/{pipeline_id}/jobs"
+        response = requests.get(url, headers=header)
+        
         for job in reversed(response.json()):
             if job["status"] == "skipped":
                 continue
