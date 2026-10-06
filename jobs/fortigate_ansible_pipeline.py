@@ -33,7 +33,7 @@ class FortigateAnsiblePipeline(Job):
             self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}. Waiting for completion...")
             time.sleep(10) 
             response = requests.get(url, headers=header)     
-            pipeline_status = response.json()[0]["status"]
+            pipeline_status = response.json()["status"]
         self.logger.info(f"Pipeline #{pipeline_id} status: {pipeline_status}")
 
         url = f"https://gitlab.msync.cz/api/v4/projects/4/pipelines/{pipeline_id}/jobs"
